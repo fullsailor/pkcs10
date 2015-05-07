@@ -30,6 +30,7 @@ type certificationRequestInfo struct {
 	Attributes    []Attribute `asn1:"tag:0"`
 }
 
+// Attribute specifies a generic CSR key pair
 type Attribute struct {
 	Type   asn1.ObjectIdentifier
 	Values asn1.RawValue `asn1:"set"`
@@ -48,8 +49,9 @@ type CertificateSigningRequest struct {
 	PublicKeyAlgorithm x509.PublicKeyAlgorithm
 	PublicKey          interface{}
 
-	Version int
-	Subject pkix.Name
+	Version    int
+	Subject    pkix.Name
+	Attributes []Attribute
 }
 
 // ParseCertificateSigningRequest parses a certificate signing request from the
@@ -136,6 +138,7 @@ func parseCertificateSigningRequest(in *certificateSigningRequest) (*Certificate
 		return nil, err
 	}
 	out.Subject.FillFromRDNSequence(&subject)
+	out.Attributes = in.CertificationRequestInfo.Attributes
 
 	return out, nil
 }
